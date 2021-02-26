@@ -1,15 +1,31 @@
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
+import route from './routes'
+import path from 'path'
+import mongoose from 'mongoose'
 
 dotenv.config()
 
-const api = express()
+mongoose.connect(process.env.DATABASE_CONNECTION, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+})
 
-api.use(express.json())
-ap.use(cors())
+const api = express()
 
 const { PORT } = process.env
 
-api.listem(PORT, () => console.log(`API rodando on port: ${PORT}`))
+api.use(express.json())
+api.use(cors())
+api.use('/', route)
+
+api.use('/files', express.static(path.resolve(__dirname, '..', 'uploads')))
+
+api.listen(PORT, () => {
+  console.log(`Entrou na API on PORT: ${PORT}`)
+})
 
 export default api
